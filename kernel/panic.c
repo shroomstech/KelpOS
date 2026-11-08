@@ -9,7 +9,7 @@ _Noreturn void kernel_panic(const char *reason)
     terminal_write_string("KERNEL PANIC\n");
     terminal_set_color(0x0F);
     terminal_write_string(reason != NULL ? reason : "No panic reason supplied.");
-    terminal_write_string("\nThe system has halted.\n");
+    terminal_write_string("\nThe system has halted. CPU Stopped Processing, Reboot the Device now\n");
 
     for (;;) {
         __asm__ volatile ("cli; hlt");

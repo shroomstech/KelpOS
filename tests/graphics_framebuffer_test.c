@@ -1,5 +1,13 @@
 #include "../graphics/framebuffer.h"
 #include "../graphics/font.h"
+#include "../graphics/desktop.h"
+
+/* The renderer is tested without calling its never-returning keyboard loop. */
+bool keyboard_read_char(char *character)
+{
+    (void)character;
+    return false;
+}
 
 #include <assert.h>
 #include <stdint.h>
@@ -39,6 +47,17 @@ int main(void)
     assert(graphics_draw_text(&framebuffer, 0, 0, "a", 0xABCDEF01, 1));
     assert(font_storage[1] == 0xABCDEF01);
 
-    puts("graphics framebuffer/font tests passed");
+    static uint32_t desktop_pixels[640 * 480];
+    const char *lines[6] = {"READY", "", "", "", "", ""};
+    assert(graphics_framebuffer_initialize(&framebuffer, desktop_pixels,
+        640, 480, 640 * sizeof(uint32_t)));
+    desktop_draw(&framebuffer, false, lines, "");
+    assert(desktop_pixels[0] == 0x102831); /* top panel */
+    assert(desktop_pixels[40 * 640 + 1] == 0x163942); /* wallpaper */
+    assert(desktop_pixels[200 * 640 + 300] == 0xE9F0EF); /* welcome window */
+    desktop_draw(&framebuffer, true, lines, "help");
+    assert(desktop_pixels[200 * 640 + 300] == 0x102831); /* terminal */
+
+    puts("graphics framebuffer/font/desktop tests passed");
     return 0;
 }

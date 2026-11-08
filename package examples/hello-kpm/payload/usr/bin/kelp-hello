@@ -1,0 +1,2 @@
+#!/bin/sh
+printf 'Hello from a KPM package.\n'

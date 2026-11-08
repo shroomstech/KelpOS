@@ -93,6 +93,7 @@ $(CISWN): ciswn/ciswn.c | $(BUILD_DIR)
 	$(HOSTCC) -std=c11 -O2 -Wall -Wextra -Werror -pedantic $< -lm -o $@
 
 $(ISO): $(KERNEL) grub/grub.cfg
+	rm -rf $(ISO_ROOT)
 	mkdir -p $(ISO_ROOT)/boot/grub
 	cp $(KERNEL) $(ISO_ROOT)/boot/kelpos.elf
 	cp grub/grub.cfg $(ISO_ROOT)/boot/grub/grub.cfg
@@ -124,8 +125,8 @@ memory-test: memory/heap.c memory/heap.h tests/kernel_heap_test.c | $(BUILD_DIR)
 
 kernel-test: memory-test
 
-graphics-test: graphics/framebuffer.c graphics/framebuffer.h graphics/font.c graphics/font.h tests/graphics_framebuffer_test.c | $(BUILD_DIR)
-	$(HOSTCC) -std=c11 -O2 -Wall -Wextra -Werror -pedantic graphics/framebuffer.c graphics/font.c tests/graphics_framebuffer_test.c -o $(BUILD_DIR)/graphics-framebuffer-test
+graphics-test: graphics/framebuffer.c graphics/framebuffer.h graphics/font.c graphics/font.h graphics/desktop.c graphics/desktop.h tests/graphics_framebuffer_test.c | $(BUILD_DIR)
+	$(HOSTCC) -std=c11 -O2 -Wall -Wextra -Werror -pedantic graphics/framebuffer.c graphics/font.c graphics/desktop.c tests/graphics_framebuffer_test.c -o $(BUILD_DIR)/graphics-framebuffer-test
 	$(BUILD_DIR)/graphics-framebuffer-test
 
 boot-test: boot/multiboot.h tests/multiboot_info_test.c | $(BUILD_DIR)
@@ -140,3 +141,5 @@ run: $(ISO)
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+compile: clean drivers-test graphics-test memory-test ciswn-test kpm-test kernel-test boot-test create run
